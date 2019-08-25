@@ -35,6 +35,10 @@ impl Square {
     pub fn is_impossible(&self) -> bool {
         self.0 == 0
     }
+    pub fn possibilities(self) -> impl Iterator<Item = u8> {
+        debug_assert!(self.is_unknown());
+        (1..=9).filter(move |&x| self.0 & (1 << (3 + x)) != 0)
+    }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -151,8 +155,21 @@ impl Board {
             }
         }
         // find first unknown
+        let u_idx = match Idx::all().find(|&i| self[i].is_unknown()) {
+            Some(i) => i,
+            None => return vec![self],
+        };
         // loop thru possibilities: solve_rec()
-        unimplemented!();
+        let mut res = vec![];
+        for pos in self[u_idx].possibilities() {
+            let mut test_board = self.clone();
+            test_board[u_idx] = Square::new(pos);
+            res.append(&mut test_board.solve_rec(all));
+            if !all && !res.is_empty() {
+                return res;
+            }
+        }
+        return res;
     }
 }
 
