@@ -3,5 +3,4 @@ name = "sudoku"
 version = "0.1.0"
 authors = ["Mark Barbone"]
 edition = "2018"
-
-[dependencies]
+license = "MIT OR Apache-2.0"
